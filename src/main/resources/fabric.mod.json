@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "servernewslist",
+	"version": "${version}",
+	"name": "ServerNewsList",
+	"description": "Mod for news in the server",
+	"authors": [
+		"WLA_MIR"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/servernewslist/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"wlamir.servernewslist.ServerNewsList"
+		],
+		"client": [
+			"wlamir.servernewslist.client.ServerNewsListClient"
+		],
+		"fabric-datagen": [
+			"wlamir.servernewslist.client.ServerNewsListDataGenerator"
+		]
+	},
+	"mixins": [
+		"servernewslist.mixins.json",
+		{
+			"config": "servernewslist.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
