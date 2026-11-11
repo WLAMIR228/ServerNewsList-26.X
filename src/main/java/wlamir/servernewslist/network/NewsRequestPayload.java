@@ -1,17 +1,22 @@
 package wlamir.servernewslist.network;
 
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 
-public record NewsRequestPayload() implements CustomPayload {
-    public static final CustomPayload.Type<NewsRequestPayload> TYPE =
-            new CustomPayload.Type<>(Identifier.of("servernews", "news_request"));
+public record NewsRequestPayload() implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<NewsRequestPayload> TYPE =
+            new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("servernewslist", "news_request"));
 
-    public static final PacketCodec<RegistryByteBuf, NewsRequestPayload> CODEC =
-            PacketCodec.unit(new NewsRequestPayload());
+    public static final StreamCodec<RegistryFriendlyByteBuf, NewsRequestPayload> CODEC =
+            StreamCodec.unit(new NewsRequestPayload());
+
+    // ДОБАВЛЕНО: срабатывает при создании пакета (отправке клиентом)
+    public NewsRequestPayload {
+        System.out.println("NewsRequestPayload");
+    }
 
     @Override
-    public CustomPayload.Type<? extends CustomPayload> type() { return TYPE; }
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() { return TYPE; }
 }

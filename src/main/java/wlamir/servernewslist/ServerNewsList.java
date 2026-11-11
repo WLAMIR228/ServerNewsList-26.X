@@ -2,10 +2,15 @@ package wlamir.servernewslist;
 
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.resources.Identifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import wlamir.servernewslist.network.NewsRequestPayload;
+import wlamir.servernewslist.network.NewsResponsePayload;
+import wlamir.servernewslist.network.UpdateCheckPayload;
+import wlamir.servernewslist.server.ServerNewsListServer;
 
 public class ServerNewsList implements ModInitializer {
 	public static final String MOD_ID = "servernewslist";
@@ -21,7 +26,22 @@ public class ServerNewsList implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		LOGGER.info("Hello Fabric world!");
+		LOGGER.info("✨ ServerNewsList is here! ✨");
+
+
+
+		PayloadTypeRegistry.serverboundPlay().register(NewsRequestPayload.TYPE, NewsRequestPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(
+				NewsResponsePayload.TYPE,
+				NewsResponsePayload.CODEC
+		);
+		PayloadTypeRegistry.clientboundPlay().register(UpdateCheckPayload.TYPE, UpdateCheckPayload.CODEC);
+
+		ServerNewsListServer.register();
+
+
+
+		LOGGER.info("📸 ServerNewsList is initialized! 📸");
 	}
 
 	public static Identifier id(String path) {
