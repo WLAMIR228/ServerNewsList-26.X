@@ -7,9 +7,7 @@ import net.minecraft.resources.Identifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import wlamir.servernewslist.network.NewsRequestPayload;
-import wlamir.servernewslist.network.NewsResponsePayload;
-import wlamir.servernewslist.network.UpdateCheckPayload;
+import wlamir.servernewslist.network.*;
 import wlamir.servernewslist.server.ServerNewsListServer;
 
 public class ServerNewsList implements ModInitializer {
@@ -29,12 +27,13 @@ public class ServerNewsList implements ModInitializer {
 		LOGGER.info("✨ ServerNewsList is here! ✨");
 
 
+		var forceload = ModGameRules.NEWS_LIFETIME_HOURS; // force load gamerules
 
 		PayloadTypeRegistry.serverboundPlay().register(NewsRequestPayload.TYPE, NewsRequestPayload.CODEC);
-		PayloadTypeRegistry.clientboundPlay().register(
-				NewsResponsePayload.TYPE,
-				NewsResponsePayload.CODEC
-		);
+		PayloadTypeRegistry.serverboundPlay().register(RateNewsPayload.TYPE, RateNewsPayload.CODEC);
+
+		PayloadTypeRegistry.clientboundPlay().register(RatingUpdatePayload.TYPE, RatingUpdatePayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(NewsResponsePayload.TYPE, NewsResponsePayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(UpdateCheckPayload.TYPE, UpdateCheckPayload.CODEC);
 
 		ServerNewsListServer.register();

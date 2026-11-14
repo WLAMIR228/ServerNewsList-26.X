@@ -3,15 +3,14 @@
 	"id": "servernewslist",
 	"version": "${version}",
 	"name": "ServerNewsList",
-	"description": "Mod for news in the server",
+	"description": "News system for Minecraft servers. Admins post, players read and rate",
 	"authors": [
 		"WLA_MIR"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://modrinth.com/mod/servernewslist"
 	},
-	"license": "CC0-1.0",
+	"license": "CC BY-SA 4.0",
 	"icon": "assets/servernewslist/icon.png",
 	"environment": "*",
 	"entrypoints": {

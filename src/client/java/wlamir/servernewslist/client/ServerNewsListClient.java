@@ -29,9 +29,9 @@ public class ServerNewsListClient implements ClientModInitializer {
 		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
 			if (screen instanceof PauseScreen) {
 				Button newsButton = Button.builder(
-						Component.literal("Новости сервера"),
+						Component.translatable("gui.servernewslist.button"),
 						button -> client.gui.setScreen(new NewsScreen(screen))
-				).bounds(scaledWidth / 2 - 100, scaledHeight / 4 + 48 + 96, 200, 20).build();
+				).bounds(scaledWidth - 128, scaledHeight - 28, 120, 20).build();
 
 				// Используем Screens.getWidgets для безопасного добавления
 				Screens.getWidgets(screen).add(newsButton);
@@ -41,6 +41,18 @@ public class ServerNewsListClient implements ClientModInitializer {
 		// Запрос данных при входе на сервер (чтобы кэш был актуален)
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
 			ClientPlayNetworking.send(new NewsRequestPayload());
+		});
+
+		ClientPlayNetworking.registerGlobalReceiver(RatingUpdatePayload.TYPE, (payload, context) -> {
+			context.client().execute(() -> {
+				if (context.client().gui.screen() instanceof NewsScreen screen) {
+					// 1. Обновляем цифры на экране
+					screen.updateRating(payload.newsId(), payload.likes(), payload.dislikes());
+
+					// 2. АВТОМАТИЧЕСКИ НАЖИМАЕМ КНОПКУ "ОБНОВИТЬ"
+					screen.triggerRefresh();
+				}
+			});
 		});
 
 		// Приём ответа с новостями
@@ -80,7 +92,7 @@ public class ServerNewsListClient implements ClientModInitializer {
 			context.client().execute(() -> {
 				String cachedId = NewsCacheManager.getLatestCachedNewsId();
 				if (!payload.latestNewsId().equals(cachedId)) {
-					context.player().sendSystemMessage(Component.literal("§e[ServerNews] Доступна новая новость!"));
+					context.player().sendSystemMessage(Component.translatable("chat.servernewslist.new_news"));
 				}
 			});
 		});

@@ -20,7 +20,7 @@ public abstract class TitleScreenMixin extends net.minecraft.client.gui.screens.
     @Inject(method = "init", at = @At("TAIL"))
     private void addNewsButton(CallbackInfo ci) {
         // Теперь this.addRenderableWidget доступен, так как мы внутри наследника Screen
-        this.addRenderableWidget(Button.builder(Component.literal("Новости сервера"),
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.servernewslist.button"),
                         button -> Minecraft.getInstance().gui.setScreen(new NewsScreen((TitleScreen) (Object) this)))
                 .bounds(this.width / 2 + 50, this.height / 4 + 48 + 24 + 24 , 100, 20)
                 .build());

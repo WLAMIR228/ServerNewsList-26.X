@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
+import wlamir.servernewslist.ServerNewsList;
 import wlamir.servernewslist.client.NewsCacheManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -25,6 +26,13 @@ public class NewsListWidget extends ObjectSelectionList<NewsListWidget.NewsEntry
     // Глобальный кэш, чтобы не забивать видеопамять
     private static final Map<String, NewsImage> TEXTURE_CACHE = new HashMap<>();
 
+    private final boolean showType1;
+    private final boolean showType2;
+    private final boolean showType3;
+    private final boolean showType4;
+
+    public String hoveredTooltip = null;
+
     @Override
     public int getRowWidth() { return this.width - 36; }
 
@@ -40,13 +48,23 @@ public class NewsListWidget extends ObjectSelectionList<NewsListWidget.NewsEntry
     @Override
     public void setSelected(@Nullable NewsListWidget.NewsEntry entry) {}
 
-    public NewsListWidget(Minecraft client, int width, int height, int top, int bottom) {
+    public NewsListWidget(Minecraft client, int width, int height, int top, int bottom,
+                          boolean showType1, boolean showType2, boolean showType3, boolean showType4) {
         super(client, width, height, top, bottom);
+        this.showType1 = showType1;
+        this.showType2 = showType2;
+        this.showType3 = showType3;
+        this.showType4 = showType4;
         loadFromCache();
     }
 
     private void loadFromCache() {
         String json = NewsCacheManager.loadCache();
+
+        if (json == null) {
+            return;
+        }
+
         if (json == null) return;
         try {
             JsonArray arr = JsonParser.parseString(json).getAsJsonArray();
@@ -58,10 +76,21 @@ public class NewsListWidget extends ObjectSelectionList<NewsListWidget.NewsEntry
 
                 int newsType = obj.has("type") ? obj.get("type").getAsInt() : 1;
 
+                if (newsType == 1 && !showType1) continue;
+                if (newsType == 2 && !showType2) continue;
+                if (newsType == 3 && !showType3) continue;
+                if (newsType == 4 && !showType4) continue;
+
+                int likes = obj.has("likes") ? obj.get("likes").getAsInt() : 0;
+                int dislikes = obj.has("dislikes") ? obj.get("dislikes").getAsInt() : 0;
+
+                boolean allowRating = obj.has("allowRating") ? obj.get("allowRating").getAsBoolean() : true;
+
                 List<NewsImage> textures = new ArrayList<>();
 
                 if (obj.has("mediaData")) {
                     JsonArray dataArr = obj.getAsJsonArray("mediaData");
+
                     for (int i = 0; i < dataArr.size(); i++) {
                         String base64 = dataArr.get(i).getAsString();
                         String cacheKey = title + "_" + i;
@@ -78,7 +107,7 @@ public class NewsListWidget extends ObjectSelectionList<NewsListWidget.NewsEntry
                     }
                 }
 
-                addEntry(new NewsEntry(title, text, textures, timestamp, newsType));
+                addEntry(new NewsEntry(title, text, textures, timestamp, newsType, likes, dislikes, allowRating, this));
             }
         } catch (Exception e) { e.printStackTrace(); }
     }
@@ -88,8 +117,9 @@ public class NewsListWidget extends ObjectSelectionList<NewsListWidget.NewsEntry
             byte[] bytes = java.util.Base64.getDecoder().decode(base64);
             BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(bytes));
 
-            // Защита от пустых или битых файлов
+
             if (bufferedImage == null || bufferedImage.getWidth() <= 0 || bufferedImage.getHeight() <= 0) {
+                ServerNewsList.LOGGER.error("Не удалось прочитать формат картинки: {}", name);
                 return null;
             }
 
@@ -125,8 +155,6 @@ public class NewsListWidget extends ObjectSelectionList<NewsListWidget.NewsEntry
             return new NewsImage(id, width, height);
 
         } catch (Exception e) {
-            System.out.println("Не удалось загрузить картинку: " + name);
-            e.printStackTrace(); // Выведет ошибку в консоль, если что-то не так
             return null;
         }
     }
@@ -135,11 +163,57 @@ public class NewsListWidget extends ObjectSelectionList<NewsListWidget.NewsEntry
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (this.isMouseOver(mouseX, mouseY)) {
             if (scrollY != 0) {
-                this.setScrollAmount(this.scrollAmount() - (scrollY * 20));
+                this.setScrollAmount(this.scrollAmount() - (scrollY * 10));
                 return true;
             }
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    @Override
+    public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
+        if (NewsScreen.isRefreshing()) {
+            return super.mouseClicked(event, doubleClick);
+        }
+
+        var font = Minecraft.getInstance().font;
+
+        for (NewsEntry entry : this.children()) {
+            // Сдвинули на 8 пикселей выше
+
+            if (!entry.allowRating) continue;
+            int btnY = entry.getY() + entry.getHeight() - 28;
+
+            String likeStr = String.valueOf(entry.likes);
+            String dislikeStr = String.valueOf(entry.dislikes);
+            int likeW = font.width(likeStr);
+            int dislikeW = font.width(dislikeStr);
+
+            // Сдвинули на 4 пикселя правее
+            int rightEdge = entry.getX() + entry.getWidth() - 10 - 1;
+
+            int dislikeTextX = rightEdge - dislikeW;
+            int dislikeIconX = dislikeTextX - 16 - 2;
+            int likeTextX = dislikeIconX - 20 - likeW;
+            int likeIconX = likeTextX - 16 - 2;
+
+            // Клик по Лайку
+            if (event.x() >= likeIconX && event.x() <= likeTextX + likeW && event.y() >= btnY && event.y() <= btnY + 16) {
+                net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(
+                        new wlamir.servernewslist.network.RateNewsPayload(entry.getTitle(), true)
+                );
+                return true;
+            }
+
+            // Клик по Дизлайку
+            if (event.x() >= dislikeIconX && event.x() <= dislikeTextX + dislikeW && event.y() >= btnY && event.y() <= btnY + 16) {
+                net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(
+                        new wlamir.servernewslist.network.RateNewsPayload(entry.getTitle(), false)
+                );
+                return true;
+            }
+        }
+        return super.mouseClicked(event, doubleClick);
     }
 
     public record NewsImage(Identifier id, int width, int height) {}
@@ -150,18 +224,31 @@ public class NewsListWidget extends ObjectSelectionList<NewsListWidget.NewsEntry
         private final List<NewsImage> images;
         private final int type;
 
+        public int likes;
+        public int dislikes;
+
+        private final boolean allowRating;
+
         // Единый отступ для всего интерфейса (слева, справа, сверху, снизу)
         private static final int PADDING = 10;
         // Высота одной строки текста
         private static final int LINE_HEIGHT = 10;
 
-        public NewsEntry(String title, String text, List<NewsImage> images, long timestamp, int type) {
+        private final NewsListWidget parentList;
+
+        public NewsEntry(String title, String text, List<NewsImage> images, long timestamp, int type, int likes, int dislikes, boolean allowRating, NewsListWidget parentWidget) {
             this.title = title;
             this.text = text;
             this.images = images;
             this.timestamp = timestamp;
             this.type = type;
+            this.likes = likes;
+            this.dislikes = dislikes;
+            this.parentList = parentWidget;
+            this.allowRating = allowRating;
         }
+
+        public String getTitle() { return title; }
 
         // Вспомогательный метод для расчета размера картинки (используется в двух местах)
         private int[] calculateImageSize(NewsImage img) {
@@ -208,28 +295,49 @@ public class NewsListWidget extends ObjectSelectionList<NewsListWidget.NewsEntry
                     mediaIndex++;
                 }
             }
+            int extraHeight = this.allowRating ? 25 : 0;
 
-            return currentHeight + PADDING; // Нижний отступ
+            return currentHeight + PADDING + extraHeight; // Нижний отступ
         }
 
 
         @Override
         public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float partialTick) {
+
             var font = Minecraft.getInstance().font;
             int startX = this.getX() + PADDING;
             int currentY = this.getY() + PADDING;
 
+            int iconX = this.getX() + this.getWidth() - 16 - PADDING;
+            int iconY = this.getY() + PADDING;
+
             int backgroundColor;
             switch (this.type) {
-                case 2:  backgroundColor = 0x55008000; break; // Зеленый
-                case 3:  backgroundColor = 0x550088FF; break; // Голубой
-                case 4:  backgroundColor = 0x55CC0000; break; // Красный
+                case 2:  backgroundColor = 0x55304030; break; // Зеленый
+                case 3:  backgroundColor = 0x55303040; break; // Голубой
+                case 4:  backgroundColor = 0x55403030; break; // Красный
                 case 1:
-                default: backgroundColor = 0x55000000; break; // Темный (как было)
+                default: backgroundColor = 0x55404040; break; // Темный (как было)
+            }
+
+            int lineColor;
+            switch (this.type) {
+                case 2:  lineColor = 0x558fbf8f; break; // Зеленый
+                case 3:  lineColor = 0x558f8fbf; break; // Голубой
+                case 4:  lineColor = 0x55bf8f8f; break; // Красный
+                case 1:
+                default: lineColor = 0x55bfbfbf; break; // Темный (как было)
             }
 
             // Фон карточки
-            graphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight() - 4, backgroundColor);
+            graphics.fill(this.getX(), this.getY()+1, this.getX() + this.getWidth(), this.getY() + this.getHeight() - 4 - 1, backgroundColor);
+
+            int lineX = this.getX() + this.getWidth() + 4;
+            graphics.fill(lineX, this.getY(), lineX + 6, this.getY() + this.getHeight() - 4, lineColor);
+
+            graphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY()+1, lineColor);
+            graphics.fill(this.getX(), this.getY() + this.getHeight() - 4, this.getX() + this.getWidth(), this.getY() + this.getHeight() - 4 + 1, lineColor);
+
 
             // Заголовок и дата
             graphics.text(font, title, startX, currentY, 0xFFFFAAFF, false);
@@ -278,6 +386,85 @@ public class NewsListWidget extends ObjectSelectionList<NewsListWidget.NewsEntry
                     mediaIndex++;
                 }
             }
+
+            int btnY = this.getY() + this.getHeight() - 28;
+            int btnX = this.getX() + this.getWidth() - 70;
+
+            String likeStr = String.valueOf(likes);
+            String dislikeStr = String.valueOf(dislikes);
+            int likeW = font.width(likeStr);
+            int dislikeW = font.width(dislikeStr);
+
+            int rightEdge = this.getX() + this.getWidth() - PADDING - 1;
+
+            int dislikeTextX = rightEdge - dislikeW;
+            int dislikeIconX = dislikeTextX - 16 - 2;
+            int likeTextX = dislikeIconX - 20 - likeW;
+            int likeIconX = likeTextX - 16 - 2;
+
+            Identifier likeIcon = Identifier.fromNamespaceAndPath("servernewslist", "textures/gui/like.png");
+            Identifier dislikeIcon = Identifier.fromNamespaceAndPath("servernewslist", "textures/gui/dislike.png");
+
+            boolean isRefreshing = NewsScreen.isRefreshing();
+
+            int iconColor = isRefreshing ? 0x80FFFFFF : 0xFFFFFFFF; // Белый (иконки)
+            int likeColor = isRefreshing ? 0x8055FF55 : 0xFF55FF55; // Зеленый
+            int dislikeColor = isRefreshing ? 0x80FF5555 : 0xFFFF5555;
+
+            if (this.allowRating) {
+            graphics.blit(RenderPipelines.GUI_TEXTURED, likeIcon, likeIconX, btnY, 0, 0, 16, 16, 16, 16, iconColor);
+            graphics.text(font, likeStr, likeTextX, btnY + 4, likeColor, false);
+
+            // Отрисовка Дизлайка
+            graphics.blit(RenderPipelines.GUI_TEXTURED, dislikeIcon, dislikeIconX, btnY, 0, 0, 16, 16, 16, 16, iconColor);
+            graphics.text(font, dislikeStr, dislikeTextX, btnY + 4, dislikeColor, false);
+
+            if (mouseX >= likeIconX && mouseX <= likeTextX + likeW && mouseY >= btnY && mouseY <= btnY + 16) {
+                this.parentList.hoveredTooltip = "gui.servernewslist.like";
+            }
+
+            // Проверка наведения на Дизлайк (иконка + текст)
+            if (mouseX >= dislikeIconX && mouseX <= dislikeTextX + dislikeW && mouseY >= btnY && mouseY <= btnY + 16) {
+                this.parentList.hoveredTooltip = "gui.servernewslist.dislike";
+            }
+            }
+
+
+
+            String iconName;
+            String tooltipKey; // <--- Теперь это ключ, а не сам текст
+            switch (this.type) {
+                case 2:
+                    iconName = "type2";
+                    tooltipKey = "gui.servernewslist.type.type2";
+                    break;
+                case 3:
+                    iconName = "type3";
+                    tooltipKey = "gui.servernewslist.type.type3";
+                    break;
+                case 4:
+                    iconName = "type4";
+                    tooltipKey = "gui.servernewslist.type.type4";
+                    break;
+                case 1:
+                default:
+                    iconName = "type1";
+                    tooltipKey = "gui.servernewslist.type.type1";
+                    break;
+            }
+
+            // Отрисовка иконки
+            Identifier typeIcon = Identifier.fromNamespaceAndPath("servernewslist", "textures/gui/icons/" + iconName + ".png");
+            graphics.blit(RenderPipelines.GUI_TEXTURED, typeIcon, iconX, iconY, 0, 0, 16, 16, 16, 16);
+
+            // Проверка наведения мыши на иконку
+            if (mouseX >= iconX && mouseX <= iconX + 16 && mouseY >= iconY && mouseY <= iconY + 16) {
+                // Сохраняем текст подсказки в родительский виджет
+                // (получаем доступ к родителю через this.parentList или через статическую переменную,
+                // но проще всего сохранить это в статическое поле самого NewsListWidget)
+                this.parentList.hoveredTooltip = tooltipKey;
+            }
+
         }
 
         // Метод для переноса длинного текста на новые строки

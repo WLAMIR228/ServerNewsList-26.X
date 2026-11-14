@@ -31,11 +31,11 @@ public class NewsFileReader {
         try {
             if (!Files.exists(newsRoot)) {
                 Files.createDirectories(newsRoot);
-                createExampleNews(newsRoot, "Пример Новости", 1);
+                createExampleNews(newsRoot, "News item Example", 1);
             }
             if (!Files.exists(postponedRoot)) {
                 Files.createDirectories(postponedRoot);
-                createExampleNews(postponedRoot, "Отложенная Новость", 2);
+                createExampleNews(postponedRoot, "HereTheFutureNewsItem", 2);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,6 +71,7 @@ public class NewsFileReader {
             if (!Files.exists(txtFile)) continue;
 
             int newsType = 1;
+            boolean allowRating = false;
             long releaseTimestamp = 0;
 
             Path propFile = folder.resolve("properties.txt");
@@ -79,6 +80,10 @@ public class NewsFileReader {
                 try (var reader = Files.newBufferedReader(propFile, StandardCharsets.UTF_8)) {
                     props.load(reader);
                     newsType = Integer.parseInt(props.getProperty("type", "1").trim());
+
+                    // Читаем новую настройку, если её нет — ставим true
+                    allowRating = Boolean.parseBoolean(props.getProperty("allow_rating", "true").trim());
+
                     String timeStr = props.getProperty("time");
                     if (timeStr != null && !timeStr.isBlank()) {
                         LocalDateTime publishTime = LocalDateTime.parse(timeStr.trim(), TIME_FORMATTER);
@@ -133,6 +138,24 @@ public class NewsFileReader {
                     }
                 }
 
+                int likes = 0;
+                int dislikes = 0;
+                Path ratingFile = folder.resolve("rating.txt");
+                if (Files.exists(ratingFile)) {
+                    try {
+                        String content = Files.readString(ratingFile, StandardCharsets.UTF_8).trim();
+                        // Новый формат: {"UUID": 1, "UUID": -1}
+                        if (content.startsWith("{")) {
+                            com.google.gson.JsonObject votes = com.google.gson.JsonParser.parseString(content).getAsJsonObject();
+                            for (String key : votes.keySet()) {
+                                int vote = votes.get(key).getAsInt();
+                                if (vote == 1) likes++;
+                                else if (vote == -1) dislikes++;
+                            }
+                        }
+                    } catch (Exception ignored) {}
+                }
+
                 Map<String, Object> newsEntry = new LinkedHashMap<>();
                 newsEntry.put("id", folderName);
                 newsEntry.put("title", folderName);
@@ -140,6 +163,10 @@ public class NewsFileReader {
                 newsEntry.put("mediaData", mediaData);
                 newsEntry.put("timestamp", releaseTimestamp);
                 newsEntry.put("type", newsType);
+                newsEntry.put("allowRating", allowRating);
+                // ДОБАВИТЬ: Передаем рейтинг на клиент
+                newsEntry.put("likes", likes);
+                newsEntry.put("dislikes", dislikes);
 
                 newsList.add(newsEntry);
             } catch (IOException e) {
@@ -153,15 +180,20 @@ public class NewsFileReader {
         Files.createDirectories(exampleFolder);
 
         Files.writeString(exampleFolder.resolve("news.txt"),
-                "Это пример новости.\nТип новости: " + type + "\n\\1\nКартинка появится здесь!",
+                "This is an example news item!\n" +
+                        "Go to the config folder named \"servernewslist\" for more info!\n" +
+                        "The server's cache and news items will be stored here.\n" +
+                        "Read the mod description on Modrinth for more info.",
                 StandardCharsets.UTF_8);
 
-        String timeStr = name.equals("Отложенная Новость") ? "31.12.2026 23:59" : "01.01.2025 12:00";
+        String timeStr = name.equals("HereTheFutureNewsItem") ? "31.12.9999 05:00" : "01.01.2025 12:00";
         Files.writeString(exampleFolder.resolve("properties.txt"),
-                "# Время публикации по GMT/UTC (День.Месяц.Год Час:Минута)\n" +
+                "# Publishing GMT/UTC time (Day.Month.Year Hour:Minute)\n" +
                         "time=" + timeStr + "\n" +
-                        "# Тип новости: 1(темный), 2(зеленый), 3(голубой), 4(красный)\n" +
-                        "type=" + type,
+                        "# News Item type: 1(dark), 2(green), 3(blue), 4(red)\n" +
+                        "type=" + type + "\n" +
+                        "# Can players increase/decrease news item rating (true/false)\n" +
+                        "allow_rating=true",
                 StandardCharsets.UTF_8);
     }
 
