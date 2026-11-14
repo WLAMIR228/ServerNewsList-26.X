@@ -1,0 +1,26 @@
+{
+  "gui.servernewslist.button": "Server News",
+  "gui.servernewslist.refresh": "Refresh",
+  "gui.servernewslist.done": "Done",
+  "gui.servernewslist.open_config": "Open Config",
+  "gui.servernewslist.wait": "Wait %s seconds...",
+  "chat.servernewslist.new_news": "§e[ServerNews] A new news is available!",
+
+  "gui.servernewslist.like": "§aIncrease rating",
+  "gui.servernewslist.dislike": "§cDecrease rating",
+  
+  "gui.servernewslist.type.type1": "§l§eNormal news",
+  "gui.servernewslist.type.type2": "§l§eUnusual news",
+  "gui.servernewslist.type.type3": "§l§eHuge news",
+  "gui.servernewslist.type.type4": "§l§eALERT",
+
+  "gui.servernewslist.type.type1.short": "Normal",
+  "gui.servernewslist.type.type2.short": "Unusual",
+  "gui.servernewslist.type.type3.short": "Huge",
+  "gui.servernewslist.type.type4.short": "ALERT",
+
+  "gamerule.servernewslist.news_lifetime_hours": "News lifetime (hours)",
+  "gamerule.servernewslist.news_lifetime_hours.description": "Hours after which old news will be automatically deleted. 0 - never.",
+  "gamerule.servernewslist.safe_delete": "Safe news delete",
+  "gamerule.servernewslist.safe_delete.description": "If true, old news will be moved to the 'deleted' folder instead of being permanently deleted."
+}

@@ -1,0 +1,26 @@
+{
+  "gui.servernewslist.button": "Новости сервера",
+  "gui.servernewslist.refresh": "Обновить",
+  "gui.servernewslist.done": "Готово",
+  "gui.servernewslist.open_config": "Открыть конфиг",
+  "gui.servernewslist.wait": "Ждите %s секунд...",
+  "chat.servernewslist.new_news": "§e[ServerNews] Доступна новая новость!",
+
+  "gui.servernewslist.like": "§aУвеличить рейтинг",
+  "gui.servernewslist.dislike": "§cУменьшить рейтинг",
+  
+  "gui.servernewslist.type.type1": "§l§eОбычная новость",
+  "gui.servernewslist.type.type2": "§l§eНеобычная новость",
+  "gui.servernewslist.type.type3": "§l§eОгромная новость",
+  "gui.servernewslist.type.type4": "§l§eВНИМАНИЕ",
+
+  "gui.servernewslist.type.type1.short": "Обычная",
+  "gui.servernewslist.type.type2.short": "Необычная",
+  "gui.servernewslist.type.type3.short": "Огромная",
+  "gui.servernewslist.type.type4.short": "ВНИМАНИЕ",
+
+  "gamerule.servernewslist.news_lifetime_hours": "Срок хранения новостей (в часах)",
+  "gamerule.servernewslist.news_lifetime_hours.description": "Через сколько часов старые новости будут автоматически удалены. 0 — никогда не удалять.",
+  "gamerule.servernewslist.safe_delete": "Безопасное удаление новостей",
+  "gamerule.servernewslist.safe_delete.description": "Если true, старые новости будут перемещаться в папку 'deleted', а не удаляться навсегда."
+}
