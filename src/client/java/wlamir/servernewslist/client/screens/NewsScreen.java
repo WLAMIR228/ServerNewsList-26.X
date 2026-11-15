@@ -21,8 +21,11 @@ public class NewsScreen extends Screen {
     private double savedScrollAmount = 0;
 
     private Button refreshButton;
-    private static long lastRefreshTime = 0;
-    private static final long REFRESH_COOLDOWN_MS = 10000;
+    public static long lastRefreshTime = 0;
+    public static long currentCooldownMs = 10000;
+
+    public static final long MANUAL_COOLDOWN_MS = 9750;
+    public static final long RATING_COOLDOWN_MS = 19750;
 
     public boolean showType1 = true;
     public boolean showType2 = true;
@@ -36,21 +39,34 @@ public class NewsScreen extends Screen {
     }
 
     public static boolean isRefreshing() {
-        return System.currentTimeMillis() - lastRefreshTime < REFRESH_COOLDOWN_MS;
+        return System.currentTimeMillis() - lastRefreshTime < currentCooldownMs;
     }
 
-    public void triggerRefresh() {
-        long now = System.currentTimeMillis();
-        if (now - lastRefreshTime >= REFRESH_COOLDOWN_MS) {
-            lastRefreshTime = now;
-            NewsCacheManager.clearCache();
+    public static long getDynamicCooldown(long baseCooldownMs) {
+        var mc = net.minecraft.client.Minecraft.getInstance();
+        if (mc.getConnection() == null) {
+            return baseCooldownMs; // Если мы не в игре, возвращаем базовое время
+        }
 
-            // Отправляем запрос на сервер
+        int playerCount = mc.getConnection().getOnlinePlayers().size();
+
+        return baseCooldownMs + (playerCount * 250L);
+    }
+
+    public void triggerRefresh(long baseCooldownMs) {
+        long now = System.currentTimeMillis();
+        long actualCooldown = getDynamicCooldown(baseCooldownMs); // <--- Высчитываем время с игроками
+
+        // Разрешаем обновление, если время истекло или если новый кулдаун больше текущего
+        if (now - lastRefreshTime >= currentCooldownMs || actualCooldown > currentCooldownMs) {
+            lastRefreshTime = now;
+            currentCooldownMs = actualCooldown; // <--- Сохраняем динамическое время
+
+            NewsCacheManager.clearCache();
             net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(
                     new wlamir.servernewslist.network.NewsRequestPayload()
             );
 
-            // Визуально отключаем кнопку, если она отрисована
             if (this.refreshButton != null) {
                 this.refreshButton.active = false;
             }
@@ -82,9 +98,7 @@ public class NewsScreen extends Screen {
         this.addWidget(this.newsList);
 
         this.refreshButton = Button.builder(Component.translatable("gui.servernewslist.refresh"), button -> {
-            lastRefreshTime = System.currentTimeMillis(); // Запоминаем время
-            NewsCacheManager.clearCache();
-            ClientPlayNetworking.send(new NewsRequestPayload());
+            triggerRefresh(MANUAL_COOLDOWN_MS);
         }).bounds(this.width - 125, 6, 120, 20).build();
 
         this.addRenderableWidget(this.refreshButton);
@@ -107,7 +121,7 @@ public class NewsScreen extends Screen {
                 }).build());
 
         this.addRenderableWidget(net.minecraft.client.gui.components.Checkbox.builder(Component.translatable("gui.servernewslist.type.type2.short"), this.font)
-                .pos(8 + 90, checkY) // Сдвинул координаты, так как текст стал короче
+                .pos(8 + 40, checkY) // Сдвинул координаты, так как текст стал короче
                 .selected(this.showType2)
                 .onValueChange((checkbox, value) -> {
                     this.showType2 = value;
@@ -115,7 +129,7 @@ public class NewsScreen extends Screen {
                 }).build());
 
         this.addRenderableWidget(net.minecraft.client.gui.components.Checkbox.builder(Component.translatable("gui.servernewslist.type.type3.short"), this.font)
-                .pos(8 + 180, checkY)
+                .pos(8 + 80, checkY)
                 .selected(this.showType3)
                 .onValueChange((checkbox, value) -> {
                     this.showType3 = value;
@@ -123,7 +137,7 @@ public class NewsScreen extends Screen {
                 }).build());
 
         this.addRenderableWidget(net.minecraft.client.gui.components.Checkbox.builder(Component.translatable("gui.servernewslist.type.type4.short"), this.font)
-                .pos(8 + 270, checkY)
+                .pos(8 + 120, checkY)
                 .selected(this.showType4)
                 .onValueChange((checkbox, value) -> {
                     this.showType4 = value;
@@ -134,15 +148,17 @@ public class NewsScreen extends Screen {
     private void updateButtonState() {
         if (this.refreshButton != null) {
             long timePassed = System.currentTimeMillis() - lastRefreshTime;
-            long timeLeft = REFRESH_COOLDOWN_MS - timePassed;
+            long timeLeft = currentCooldownMs - timePassed; // <--- Используем текущий кулдаун
 
             if (timeLeft > 0) {
                 this.refreshButton.active = false;
                 long secondsLeft = (timeLeft / 1000) + 1;
                 this.refreshButton.setMessage(Component.translatable("gui.servernewslist.wait", secondsLeft));
             } else {
-                this.refreshButton.active = true;
-                this.refreshButton.setMessage(Component.translatable("gui.servernewslist.refresh"));
+                if (!this.refreshButton.active) {
+                    this.refreshButton.active = true;
+                    this.refreshButton.setMessage(Component.translatable("gui.servernewslist.refresh"));
+                }
             }
         }
     }

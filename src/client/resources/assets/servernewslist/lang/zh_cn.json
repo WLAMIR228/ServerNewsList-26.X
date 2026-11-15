@@ -1,0 +1,26 @@
+{
+  "gui.servernewslist.button": "服务器新闻",
+  "gui.servernewslist.refresh": "刷新",
+  "gui.servernewslist.done": "完成",
+  "gui.servernewslist.open_config": "打开配置",
+  "gui.servernewslist.wait": "请等待 %s 秒...",
+  "chat.servernewslist.new_news": "§e[ServerNews] 有新的新闻可用！",
+
+  "gui.servernewslist.like": "§a增加评分",
+  "gui.servernewslist.dislike": "§c减少评分",
+
+  "gui.servernewslist.type.type1": "§l§e普通新闻 §f🤍",
+  "gui.servernewslist.type.type2": "§l§e不寻常新闻 §a✨",
+  "gui.servernewslist.type.type3": "§l§e重大新闻 §9💥",
+  "gui.servernewslist.type.type4": "§l§e警告 §c⚙",
+
+  "gui.servernewslist.type.type1.short": "§l§f🤍",
+  "gui.servernewslist.type.type2.short": "§l§a✨",
+  "gui.servernewslist.type.type3.short": "§l§9💥",
+  "gui.servernewslist.type.type4.short": "§l§c⚙",
+
+  "gamerule.servernewslist.news_lifetime_hours": "新闻保留时间 (小时)",
+  "gamerule.servernewslist.news_lifetime_hours.description": "旧新闻自动删除的小时数。0 - 永不删除。",
+  "gamerule.servernewslist.safe_delete": "安全删除新闻",
+  "gamerule.servernewslist.safe_delete.description": "如果为 true，旧新闻将被移动到 'deleted' 文件夹，而不是永久删除。"
+}

@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.network.chat.Component;
+import wlamir.servernewslist.client.ServerNewsListConfig;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -342,10 +343,19 @@ public class NewsListWidget extends ObjectSelectionList<NewsListWidget.NewsEntry
             // Заголовок и дата
             graphics.text(font, title, startX, currentY, 0xFFFFAAFF, false);
             currentY += 12;
+            boolean showLocal = ServerNewsListConfig.getInstance().show_my_timezone;
+            String date;
+
             java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm");
             sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT")); // Принудительно ставим GMT
-            String local = new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(new java.util.Date(timestamp));
-            String date = sdf.format(new java.util.Date(timestamp)) + " (" + local + ")";
+            if (showLocal) {
+                // Показываем время в часовом поясе игрока (по умолчанию Java использует локальное время)
+                String local = new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(new java.util.Date(timestamp));
+                date = sdf.format(new java.util.Date(timestamp)) + " (" + local + ")";
+            } else {
+                // Показываем время по Гринвичу (UTC)
+                date = sdf.format(new java.util.Date(timestamp));
+            }
             graphics.text(font, date, startX, currentY, 0xAAAAAAFF, false);
             currentY += 14;
 

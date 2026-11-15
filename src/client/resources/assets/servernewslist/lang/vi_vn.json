@@ -1,0 +1,26 @@
+{
+  "gui.servernewslist.button": "Tin tức máy chủ",
+  "gui.servernewslist.refresh": "Làm mới",
+  "gui.servernewslist.done": "Xong",
+  "gui.servernewslist.open_config": "Mở cấu hình",
+  "gui.servernewslist.wait": "Vui lòng đợi %s giây...",
+  "chat.servernewslist.new_news": "§e[ServerNews] Có tin tức mới!",
+
+  "gui.servernewslist.like": "§aTăng đánh giá",
+  "gui.servernewslist.dislike": "§cGiảm đánh giá",
+
+  "gui.servernewslist.type.type1": "§l§eTin tức bình thường §f🤍",
+  "gui.servernewslist.type.type2": "§l§eTin tức bất thường §a✨",
+  "gui.servernewslist.type.type3": "§l§eTin tức khổng lồ §9💥",
+  "gui.servernewslist.type.type4": "§l§eCẢNH BÁO §c⚙",
+
+  "gui.servernewslist.type.type1.short": "§l§f🤍",
+  "gui.servernewslist.type.type2.short": "§l§a✨",
+  "gui.servernewslist.type.type3.short": "§l§9💥",
+  "gui.servernewslist.type.type4.short": "§l§c⚙",
+
+  "gamerule.servernewslist.news_lifetime_hours": "Thời gian tồn tại của tin tức (giờ)",
+  "gamerule.servernewslist.news_lifetime_hours.description": "Số giờ sau đó tin tức cũ sẽ tự động bị xóa. 0 - không bao giờ.",
+  "gamerule.servernewslist.safe_delete": "Xóa tin tức an toàn",
+  "gamerule.servernewslist.safe_delete.description": "Nếu đúng, tin tức cũ sẽ được chuyển vào thư mục 'deleted' thay vì bị xóa vĩnh viễn."
+}

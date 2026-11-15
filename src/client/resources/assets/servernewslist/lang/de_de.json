@@ -1,0 +1,26 @@
+{
+  "gui.servernewslist.button": "Server-Nachrichten",
+  "gui.servernewslist.refresh": "Aktualisieren",
+  "gui.servernewslist.done": "Fertig",
+  "gui.servernewslist.open_config": "Konfiguration öffnen",
+  "gui.servernewslist.wait": "Warte %s Sekunden...",
+  "chat.servernewslist.new_news": "§e[ServerNews] Eine neue Nachricht ist verfügbar!",
+
+  "gui.servernewslist.like": "§aBewertung erhöhen",
+  "gui.servernewslist.dislike": "§cBewertung verringern",
+
+  "gui.servernewslist.type.type1": "§l§eNormale Nachricht §f🤍",
+  "gui.servernewslist.type.type2": "§l§eUngewöhnliche Nachricht §a✨",
+  "gui.servernewslist.type.type3": "§l§eGroße Nachricht §9💥",
+  "gui.servernewslist.type.type4": "§l§eWARNUNG §c⚙",
+
+  "gui.servernewslist.type.type1.short": "§l§f🤍",
+  "gui.servernewslist.type.type2.short": "§l§a✨",
+  "gui.servernewslist.type.type3.short": "§l§9💥",
+  "gui.servernewslist.type.type4.short": "§l§c⚙",
+
+  "gamerule.servernewslist.news_lifetime_hours": "Lebensdauer der Nachrichten (Stunden)",
+  "gamerule.servernewslist.news_lifetime_hours.description": "Stunden, nach denen alte Nachrichten automatisch gelöscht werden. 0 - niemals.",
+  "gamerule.servernewslist.safe_delete": "Sicheres Löschen von Nachrichten",
+  "gamerule.servernewslist.safe_delete.description": "Wenn wahr, werden alte Nachrichten in den Ordner 'deleted' verschoben, anstatt dauerhaft gelöscht zu werden."
+}

@@ -1,0 +1,26 @@
+{
+  "gui.servernewslist.button": "Sunucu Haberleri",
+  "gui.servernewslist.refresh": "Yenile",
+  "gui.servernewslist.done": "Bitti",
+  "gui.servernewslist.open_config": "Yapılandırmayı Aç",
+  "gui.servernewslist.wait": "%s saniye bekleyin...",
+  "chat.servernewslist.new_news": "§e[ServerNews] Yeni bir haber mevcut!",
+
+  "gui.servernewslist.like": "§aDeğerlendirmeyi artır",
+  "gui.servernewslist.dislike": "§cDeğerlendirmeyi azalt",
+
+  "gui.servernewslist.type.type1": "§l§eNormal haber §f🤍",
+  "gui.servernewslist.type.type2": "§l§eOlağandışı haber §a✨",
+  "gui.servernewslist.type.type3": "§l§eDev haber §9💥",
+  "gui.servernewslist.type.type4": "§l§eUYARI §c⚙",
+
+  "gui.servernewslist.type.type1.short": "§l§f🤍",
+  "gui.servernewslist.type.type2.short": "§l§a✨",
+  "gui.servernewslist.type.type3.short": "§l§9💥",
+  "gui.servernewslist.type.type4.short": "§l§c⚙",
+
+  "gamerule.servernewslist.news_lifetime_hours": "Haber ömrü (saat)",
+  "gamerule.servernewslist.news_lifetime_hours.description": "Eski haberlerin otomatik olarak silineceği saat sayısı. 0 - asla.",
+  "gamerule.servernewslist.safe_delete": "Güvenli haber silme",
+  "gamerule.servernewslist.safe_delete.description": "Doğruysa, eski haberler kalıcı olarak silinmek yerine 'deleted' klasörüne taşınır."
+}

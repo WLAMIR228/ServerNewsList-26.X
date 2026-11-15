@@ -9,15 +9,15 @@
   "gui.servernewslist.like": "§aУвеличить рейтинг",
   "gui.servernewslist.dislike": "§cУменьшить рейтинг",
   
-  "gui.servernewslist.type.type1": "§l§eОбычная новость",
-  "gui.servernewslist.type.type2": "§l§eНеобычная новость",
-  "gui.servernewslist.type.type3": "§l§eОгромная новость",
-  "gui.servernewslist.type.type4": "§l§eВНИМАНИЕ",
+  "gui.servernewslist.type.type1": "§l§eОбычная новость §f🤍",
+  "gui.servernewslist.type.type2": "§l§eНеобычная новость §a✨",
+  "gui.servernewslist.type.type3": "§l§eОгромная новость §9💥",
+  "gui.servernewslist.type.type4": "§l§eВНИМАНИЕ §c⚙",
 
-  "gui.servernewslist.type.type1.short": "Обычная",
-  "gui.servernewslist.type.type2.short": "Необычная",
-  "gui.servernewslist.type.type3.short": "Огромная",
-  "gui.servernewslist.type.type4.short": "ВНИМАНИЕ",
+  "gui.servernewslist.type.type1.short": "§l§f🤍",
+  "gui.servernewslist.type.type2.short": "§l§a✨",
+  "gui.servernewslist.type.type3.short": "§l§9💥",
+  "gui.servernewslist.type.type4.short": "§l§c⚙",
 
   "gamerule.servernewslist.news_lifetime_hours": "Срок хранения новостей (в часах)",
   "gamerule.servernewslist.news_lifetime_hours.description": "Через сколько часов старые новости будут автоматически удалены. 0 — никогда не удалять.",

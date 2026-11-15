@@ -8,7 +8,9 @@
 		"WLA_MIR"
 	],
 	"contact": {
-		"homepage": "https://modrinth.com/mod/servernewslist"
+		"homepage": "https://modrinth.com/mod/servernewslist",
+		"sources": "https://github.com/WLAMIR228/ServerNewsList-26.X",
+		"issues": "https://github.com/WLAMIR228/ServerNewsList-26.X/issues"
 	},
 	"license": "CC BY-SA 4.0",
 	"icon": "assets/servernewslist/icon.png",

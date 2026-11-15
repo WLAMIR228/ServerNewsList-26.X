@@ -1,0 +1,26 @@
+{
+  "gui.servernewslist.button": "Noticias del Servidor",
+  "gui.servernewslist.refresh": "Actualizar",
+  "gui.servernewslist.done": "Listo",
+  "gui.servernewslist.open_config": "Abrir Configuración",
+  "gui.servernewslist.wait": "Espera %s segundos...",
+  "chat.servernewslist.new_news": "§e[ServerNews] ¡Una nueva noticia está disponible!",
+
+  "gui.servernewslist.like": "§aAumentar calificación",
+  "gui.servernewslist.dislike": "§cDisminuir calificación",
+
+  "gui.servernewslist.type.type1": "§l§eNoticia Normal §f🤍",
+  "gui.servernewslist.type.type2": "§l§eNoticia Inusual §a✨",
+  "gui.servernewslist.type.type3": "§l§eNoticia Enorme §9💥",
+  "gui.servernewslist.type.type4": "§l§eALERTA §c⚙",
+
+  "gui.servernewslist.type.type1.short": "§l§f🤍",
+  "gui.servernewslist.type.type2.short": "§l§a✨",
+  "gui.servernewslist.type.type3.short": "§l§9💥",
+  "gui.servernewslist.type.type4.short": "§l§c⚙",
+
+  "gamerule.servernewslist.news_lifetime_hours": "Tiempo de vida de las noticias (horas)",
+  "gamerule.servernewslist.news_lifetime_hours.description": "Horas tras las cuales las noticias antiguas se eliminarán automáticamente. 0 - nunca.",
+  "gamerule.servernewslist.safe_delete": "Eliminación segura de noticias",
+  "gamerule.servernewslist.safe_delete.description": "Si es verdadero, las noticias antiguas se moverán a la carpeta 'deleted' en lugar de eliminarse permanentemente."
+}

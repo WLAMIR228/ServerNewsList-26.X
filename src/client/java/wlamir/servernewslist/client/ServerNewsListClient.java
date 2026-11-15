@@ -25,15 +25,54 @@ public class ServerNewsListClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+
+		ServerNewsListConfig.load();
 		// Добавление кнопки в меню паузы (ESC)
 		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
 			if (screen instanceof PauseScreen) {
-				Button newsButton = Button.builder(
-						Component.translatable("gui.servernewslist.button"),
-						button -> client.gui.setScreen(new NewsScreen(screen))
-				).bounds(scaledWidth - 128, scaledHeight - 28, 120, 20).build();
+				// Получаем выбранную позицию из конфига
+				String pos = ServerNewsListConfig.getInstance().button_pos;
+				if (pos == null) pos = "center";
 
-				// Используем Screens.getWidgets для безопасного добавления
+				int btnX;
+				int btnY;
+
+				// Вычисляем координаты по вашему списку
+				switch (pos.toLowerCase()) {
+					case "top_left":
+						btnX = 8;
+						btnY = 8;
+						break;
+					case "bottom_left":
+						btnX = 8;
+						btnY = scaledHeight - 28;
+						break;
+					case "top_right":
+						btnX = scaledWidth - 128;
+						btnY = 8;
+						break;
+					case "bottom_right":
+						btnX = scaledWidth - 128;
+						btnY = scaledHeight - 28;
+						break;
+					case "bottom_center":
+						btnX = scaledWidth / 2 - 60;
+						btnY = scaledHeight - 28;
+						break;
+					case "center":
+					default:
+						btnX = scaledWidth / 2 - 60;
+						btnY = scaledHeight / 4 + 48 + 96;
+						break;
+				}
+
+				Button newsButton = Button.builder(
+								Component.translatable("gui.servernewslist.button"),
+								button -> client.gui.setScreen(new NewsScreen(screen))
+						)
+						.bounds(btnX, btnY, 120, 20) // <--- Применяем вычисленные координаты
+						.build();
+
 				Screens.getWidgets(screen).add(newsButton);
 			}
 		});
@@ -49,8 +88,8 @@ public class ServerNewsListClient implements ClientModInitializer {
 					// 1. Обновляем цифры на экране
 					screen.updateRating(payload.newsId(), payload.likes(), payload.dislikes());
 
-					// 2. АВТОМАТИЧЕСКИ НАЖИМАЕМ КНОПКУ "ОБНОВИТЬ"
-					screen.triggerRefresh();
+					// 2. Запускаем обновление с кулдауном 30 секунд (RATING_COOLDOWN_MS)
+					screen.triggerRefresh(NewsScreen.RATING_COOLDOWN_MS);
 				}
 			});
 		});

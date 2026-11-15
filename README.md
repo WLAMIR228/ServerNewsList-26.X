@@ -3,6 +3,32 @@
 
 Tired of players missing important updates because the chat moves too fast? Server News List adds a beautiful, customizable in-game newspaper. Admins write the news via simple config files, and players read it in a dedicated GUI with images, ratings, and more!
 
+# 🌐 Translations
+
+<details>
+<summary>😑Human-translated & checked</summary>
+
+- English, US (`en_us`)
+- Russian, Russia (`ru_ru`)
+
+</details>
+
+
+
+<details>
+<summary>🤖AI-generated</summary>
+
+- German (`de_de`)
+- Spanish (`es_es`)
+- Portuguese, Brazil (`pt_br`)
+- Turkish (`tr_tr`)
+- Vietnamese (`vi_vn`)
+- Chinese, Simplified (`zh_cn`)
+
+</details>
+
+
+
 
 
 # 🛠️ How to use (For Admins)
@@ -11,7 +37,7 @@ config/servernewslist/<Your_Server_Name>/
 
 
 <details>
-<summary>Creating a News Post</summary>
+<summary>✨Creating a News Post</summary>
 
 - Go to the news folder.
 
@@ -43,7 +69,7 @@ allow_rating=true
 
 
 <details>
-<summary>Scheduling News</summary>
+<summary>🚅Scheduling News</summary>
 
 Put the folder into the postponed directory instead of news. Once the GMT time in properties.txt is reached, the mod will automatically move it to news and make it visible!
 
@@ -51,9 +77,17 @@ Put the folder into the postponed directory instead of news. Once the GMT time i
 
 
 
+<details>
+<summary>💡Recommendation</summary>
+
+If you are creating large news items with long text or multiple images, we highly recommend testing them in singleplayer first. Pay special attention to testing with maximum GUI Scale, as images and text will automatically scale to fit the screen.
+
+</details>
+
+
 
 <details>
-<summary>GameRules</summary>
+<summary>⚙️GameRules</summary>
 
 - /gamerule servernewslist:news_lifetime_hours <number> - Auto-delete news after X hours (Default: 336, set to 0 to disable).
 
@@ -61,3 +95,17 @@ Put the folder into the postponed directory instead of news. Once the GMT time i
 
 </details>
 
+
+
+# 📄 Config
+You can control your privacy by toggling the display of your local time zone:
+
+```
+"show_my_timezone": false
+```
+You can also customize the position of the News button in the Pause menu:
+
+```
+"button_pos": "bottom_left"
+//Variations: "top_left","bottom_left","top_right","bottom_right","center","bottom_center"
+```
